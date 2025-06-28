@@ -19,23 +19,36 @@ export const io = new Server(server, {
   cors: { origin: "*" },
 });
 
-// store online users
-export const userSocketMap = {}; // {userId: socketId}
+// store online users with multiple sockets
+export const userSocketMap = {}; // { userId: Set of socketIds }
 
-// socket.io connection handler
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   console.log("User Connected", userId);
 
-  if (userId) userSocketMap[userId] = socket.id;
+  if (userId) {
+    if (!userSocketMap[userId]) {
+      userSocketMap[userId] = new Set();
+    }
+    userSocketMap[userId].add(socket.id);
 
-  // emit online users to all connected clients
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    // Emit updated online users
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  }
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", userId);
-    delete userSocketMap[userId];
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+    if (userId && userSocketMap[userId]) {
+      userSocketMap[userId].delete(socket.id);
+
+      // If user has no more active sockets, consider offline
+      if (userSocketMap[userId].size === 0) {
+        delete userSocketMap[userId];
+      }
+
+      io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    }
   });
 });
 
