@@ -42,7 +42,6 @@ io.on("connection", (socket) => {
     if (userId && userSocketMap[userId]) {
       userSocketMap[userId].delete(socket.id);
 
-      // If user has no more active sockets, consider offline
       if (userSocketMap[userId].size === 0) {
         delete userSocketMap[userId];
       }
@@ -64,10 +63,9 @@ app.use("/api/messages", messageRouter);
 // connect to db
 await connectDB();
 
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  server.listen(PORT, () => console.log("Server is running on PORT: " + PORT));
-}
+// always listen (for both development and production)
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log("Server is running on PORT: " + PORT));
 
-// export server for vercel
+// export server (for testing or optional use)
 export default server;
