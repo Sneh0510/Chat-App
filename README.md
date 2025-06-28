@@ -23,7 +23,7 @@
 ## 🌎 Live Preview
 
 <p align="center">
-  <a href="https://chat-app-pi-peach-74.vercel.app/" target="_blank">
+  <a href="https://chat-app-navy-tau-63.vercel.app/" target="_blank">
     <img src="https://img.shields.io/badge/Live%20Demo-Online-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo" />
   </a>
 </p>
